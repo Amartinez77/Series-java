@@ -20,68 +20,25 @@ public class Serie {
         this.temporadas = new ArrayList<>();
     }
 
-    public void agregarTemporada(Temporada temporada) {
-        if (temporada == null) {
-            throw new IllegalArgumentException("La temporada no puede ser nula.");
-        }
-        this.temporadas.add(temporada);
-    }
-    
-    /**
-     * Servicio: Obtener el total de episodios vistos de una serie.
-     * Delega en cada temporada su propio conteo.
-     */
-    public int obtenerTotalEpisodiosVistos() {
-        int totalVistos = 0;
-        for (Temporada temp : temporadas) {
-            totalVistos += temp.obtenerTotalEpisodiosVistos();
-        }
-        return totalVistos;
-    }
-    
-    /**
-     * Servicio: Obtener el promedio de calificaciones de la serie.
-     * IMPORTANTE: No se deben promediar los promedios de las temporadas (error matemático clásico).
-     * Se debe dividir la suma total de puntos sobre la cantidad total de capítulos calificados.
-     */
-    public double obtenerPromedioCalificaciones() {
-        int sumaTotal = 0;
-        int totalCalificados = 0;
-
-        for (Temporada temp : temporadas) {
-            sumaTotal += temp.obtenerSumaCalificaciones();
-            totalCalificados += temp.obtenerCantidadEpisodiosCalificados();
-        }
-
-        if (totalCalificados == 0) {
-            return 0.0;
-        }
-
-        return (double) sumaTotal / totalCalificados;
-    }
-    
-    /**
-     * Servicio: Determinar si el usuario ya vio todos los episodios de la serie.
-     */
-    public boolean usuarioVioTodaLaSerie() {
-        if (temporadas.isEmpty()) {
-            return false;
-        }
-        for (Temporada temp : temporadas) {
-            if (!temp.estanTodosVistos()) {
-                return false;
-            }
-        }
-        return true;
+    public void agregarTemporada(Temporada t) {
+        if (t != null) temporadas.add(t);
     }
 
-    public List<Temporada> getTemporadas() {
-        return Collections.unmodifiableList(temporadas);
+    public List<Episodio> getTodosLosEpisodios() {
+        List<Episodio> todos = new ArrayList<>();
+        for (Temporada t : temporadas) {
+            todos.addAll(t.getEpisodios());
+        }
+        return Collections.unmodifiableList(todos);
     }
-    
+
+    public Temporada buscarTemporada(int numero) {
+        return temporadas.stream()
+                .filter(t -> t.getNumero() == numero)
+                .findFirst()
+                .orElse(null);
+    }
+
     public String getTitulo() { return titulo; }
-    public String getDescripcion() { return descripcion; }
-    public String getCreador() { return creador; }
-    public String getGenero() { return genero; }
-
+    public List<Temporada> getTemporadas() { return Collections.unmodifiableList(temporadas); }
 }
